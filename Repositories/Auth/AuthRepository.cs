@@ -17,13 +17,14 @@ namespace Hustle.Repositories.Auth
 {
     public class AuthRepository : IAuthRepository
     {
-        private readonly string _connectionString = "Host=localhost:5432;Username=postgres;Password=Alser1234;Database=postgres";
+        //private readonly string _connectionString = "Host=localhost:5432;Username=postgres;Password=Alser1234;Database=postgres";
+
+        private readonly string _connectionString = "Host=ec2-52-0-79-72.compute-1.amazonaws.com;Port=5432;Database=d85b4ci8ushl2f;Username=mkkxvzybqzukra;Password=59a766f9938a5d14fc0dfc2f8a1b389694a40d9ca0c5cdb4dd6bd71828b0b6fe";
         private readonly IConfiguration _configuration;
         
-
         public ApiResponse<string> Register(UserRegistration input) 
         {
-            var t = SecurePasswordHasher.Hash(input.password, 2);
+           // var t = SecurePasswordHasher.Hash(input.password, 2);
             ApiResponse<string> result = new ApiResponse<string>();
             try
             {
@@ -34,8 +35,8 @@ namespace Hustle.Repositories.Auth
                      {
                         cmd.Connection = conn;
                         cmd.CommandText = $"INSERT INTO USERS (email, password, role) VALUES (@email, @password, @role)";
-                        cmd.Parameters.AddWithValue("password", SecurePasswordHasher.Hash(input.password, 2));
                         cmd.Parameters.AddWithValue("email", input.email);
+                        cmd.Parameters.AddWithValue("password", /*SecurePasswordHasher.Hash(input.password, 2)*/ input.password);
                         cmd.Parameters.AddWithValue("role", 1);
                         cmd.ExecuteNonQueryAsync();
                      }
@@ -138,7 +139,7 @@ namespace Hustle.Repositories.Auth
                      using (NpgsqlCommand cmd = new NpgsqlCommand())
                      {
                         cmd.Connection = conn;
-                        cmd.CommandText = $"ALTER TABLE USERS WHERE EMAIL = @email";
+                        cmd.CommandText = $"UPDATE USERS SET  WHERE EMAIL = @email";
                         cmd.Parameters.AddWithValue("email", input.email);
                         cmd.ExecuteNonQueryAsync();
                      }
